@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:oklch(0.10 0.01 250);font-family:Inter,system-ui,sans-serif}
+a{color:oklch(0.78 0.13 200);text-decoration:none}
+a:hover{color:oklch(0.85 0.13 200)}
+::-webkit-scrollbar{width:0;height:0}
+@keyframes nemsSpin{to{transform:rotate(360deg)}}
+@keyframes nemsPulse{0%,100%{opacity:1}50%{opacity:0.35}}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:oklch(0.32 0.02 250);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:oklch(0.78 0.13 200);border:3px solid oklch(0.10 0.01 250);box-shadow:0 0 0 1px oklch(0.78 0.13 200 / 40%);cursor:pointer}
+</style>
+</helmet>
+
+<div style="min-height:940px;display:flex;flex-direction:column;align-items:center;gap:18px;padding:40px 20px;background:oklch(0.10 0.01 250)">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;color:oklch(0.52 0.01 250);text-transform:uppercase">NEMS Mobile · Interactive Prototype</div>
+
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402,874">
+<div style="height:100%;display:flex;flex-direction:column;background:oklch(0.13 0.015 250);position:relative;font-family:Inter,system-ui,sans-serif">
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;gap:28px">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+    <div style="width:64px;height:64px;border-radius:18px;background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);display:flex;align-items:center;justify-content:center">
+      <svg width="30" height="34" viewBox="0 0 30 34" fill="none"><path d="M15 1L28 7V16C28 24.5 22.5 30.8 15 33C7.5 30.8 2 24.5 2 16V7L15 1Z" stroke="oklch(0.78 0.13 200)" stroke-width="2" stroke-linejoin="round"/><circle cx="15" cy="16" r="5" stroke="oklch(0.78 0.13 200)" stroke-width="2"/></svg>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:22px;font-weight:800;color:oklch(0.96 0.004 250);letter-spacing:0.02em">NEMS</div>
+      <div style="font-size:13px;color:oklch(0.72 0.01 250);margin-top:4px">Nuclear Environmental Monitoring System</div>
+    </div>
+  </div>
+  <div style="width:100%;display:flex;flex-direction:column;gap:12px">
+    <input type="text" placeholder="Facility email" value="{{ loginEmail }}" onChange="{{ setLoginEmail }}" style="width:100%;box-sizing:border-box;background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:12px;padding:14px 16px;color:oklch(0.96 0.004 250);font-size:15px;font-family:Inter,sans-serif" />
+    <input type="password" placeholder="Password" value="{{ loginPassword }}" onChange="{{ setLoginPassword }}" style="width:100%;box-sizing:border-box;background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:12px;padding:14px 16px;color:oklch(0.96 0.004 250);font-size:15px;font-family:Inter,sans-serif" />
+    <button onClick="{{ doLogin }}" style="width:100%;box-sizing:border-box;padding:15px;border-radius:12px;border:none;background:oklch(0.78 0.13 200);color:oklch(0.12 0.02 250);font-weight:700;font-size:15px;cursor:pointer;margin-top:4px">Sign In</button>
+    <div style="text-align:center;font-size:12px;color:oklch(0.52 0.01 250);margin-top:6px">Facility use only · Cleared personnel · v2.4.1</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;overflow-y:auto;padding-top:56px;padding-bottom:{{ tabScreenBottomPad }}px;box-sizing:border-box" data-scroll-area="true">
+
+<!-- HOME -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:13px;color:oklch(0.72 0.01 250)">Good morning, Alex</div>
+      <div style="font-size:24px;font-weight:800;color:oklch(0.96 0.004 250)">Facility Overview</div>
+    </div>
+    <div onClick="{{ goNotifications }}" style="position:relative;width:40px;height:40px;border-radius:12px;background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);display:flex;align-items:center;justify-content:center;cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 15V9a6 6 0 0112 0v6l1.5 2.5h-15L4 15z" stroke="oklch(0.85 0.005 250)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 18a2 2 0 004 0" stroke="oklch(0.85 0.005 250)" stroke-width="1.6"/></svg>
+      <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:oklch(0.63 0.19 25)"></div></sc-if>
+    </div>
+  </div>
+
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:12px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em">Active Station</div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:oklch(0.75 0.14 150);animation:nemsPulse 2s infinite"></div><span style="font-size:11px;color:oklch(0.52 0.01 250);font-family:'IBM Plex Mono',monospace">LIVE</span></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:17px;font-weight:700;color:oklch(0.96 0.004 250)">{{ activeStationName }}</div>
+        <div style="font-size:12px;color:oklch(0.52 0.01 250);font-family:'IBM Plex Mono',monospace">{{ activeStationCode }}</div>
+      </div>
+      <div style="padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:0.04em;background:{{ activeStationStatusColor }};color:oklch(0.12 0.02 250)">{{ activeStationStatusLabel }}</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <div style="flex:1;background:oklch(0.24 0.015 250);border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:oklch(0.52 0.01 250);text-transform:uppercase">Ozone</div>
+        <div style="font-size:16px;font-weight:700;color:oklch(0.96 0.004 250);font-family:'IBM Plex Mono',monospace">{{ activeStationOzone }}</div>
+      </div>
+      <div style="flex:1;background:oklch(0.24 0.015 250);border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:oklch(0.52 0.01 250);text-transform:uppercase">CO</div>
+        <div style="font-size:16px;font-weight:700;color:oklch(0.96 0.004 250);font-family:'IBM Plex Mono',monospace">{{ activeStationCo }}</div>
+      </div>
+      <div style="flex:1;background:oklch(0.24 0.015 250);border-radius:10px;padding:10px">
+        <div style="font-size:10px;color:oklch(0.52 0.01 250);text-transform:uppercase">Alerts</div>
+        <div style="font-size:16px;font-weight:700;color:oklch(0.96 0.004 250);font-family:'IBM Plex Mono',monospace">{{ activeAlertsCount }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em;margin:0 0 10px">Quick Actions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div onClick="{{ goSimulate }}" style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;padding:14px;cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 14l4-8 3 5 3-9 3 8 3-3" stroke="oklch(0.78 0.13 200)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="font-size:13px;font-weight:600;color:oklch(0.96 0.004 250);margin-top:8px">Run Simulation</div>
+      </div>
+      <div onClick="{{ goAlerts }}" style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;padding:14px;cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 015 5v3l1.5 3h-13L5 10V7a5 5 0 015-5z" stroke="oklch(0.78 0.14 80)" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <div style="font-size:13px;font-weight:600;color:oklch(0.96 0.004 250);margin-top:8px">View Alerts</div>
+      </div>
+      <div onClick="{{ goTrends }}" style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;padding:14px;cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 17V3M2 17h16" stroke="oklch(0.75 0.14 150)" stroke-width="1.6" stroke-linecap="round"/><path d="M4 13l4-5 3 3 5-7" stroke="oklch(0.75 0.14 150)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="font-size:13px;font-weight:600;color:oklch(0.96 0.004 250);margin-top:8px">Trends</div>
+      </div>
+      <div onClick="{{ goReports }}" style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;padding:14px;cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l3 3v13H5V2z" stroke="oklch(0.78 0.13 200)" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 10h4M8 13h4" stroke="oklch(0.78 0.13 200)" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <div style="font-size:13px;font-weight:600;color:oklch(0.96 0.004 250);margin-top:8px">Reports</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:0 0 10px">
+      <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em">Recent Activity</div>
+      <div onClick="{{ goHandoff }}" style="font-size:12px;color:oklch(0.78 0.13 200);cursor:pointer">Full log</div>
+    </div>
+    <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+      <sc-for list="{{ homeHandoffPreview }}" as="h" hint-placeholder-count="2">
+        <div style="padding:12px 14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;gap:10px;align-items:flex-start">
+          <div style="width:6px;height:6px;border-radius:50%;background:{{ h.color }};margin-top:6px;flex-shrink:0"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;color:oklch(0.90 0.004 250);line-height:1.4">{{ h.note }}</div>
+            <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:3px;font-family:'IBM Plex Mono',monospace">{{ h.tech }} · {{ h.time }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- SIMULATE -->
+<sc-if value="{{ isSimulate }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:20px">
+  <div>
+    <div style="font-size:24px;font-weight:800;color:oklch(0.96 0.004 250)">Live Simulation</div>
+    <div style="font-size:13px;color:oklch(0.72 0.01 250);margin-top:4px">Predict Ozone impact from manual sensor overrides using the Random Forest model (R² 0.7162).</div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:18px">
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:oklch(0.90 0.004 250);margin-bottom:8px"><span>Ambient Temperature</span><span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.78 0.13 200)">{{ simTemp }}°F</span></div>
+      <input type="range" min="10" max="110" value="{{ simTemp }}" onChange="{{ setSimTemp }}" style="width:100%" />
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:oklch(0.90 0.004 250);margin-bottom:8px"><span>NO2 Concentration</span><span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.78 0.13 200)">{{ simNo2 }} ppb</span></div>
+      <input type="range" min="0" max="60" value="{{ simNo2 }}" onChange="{{ setSimNo2 }}" style="width:100%" />
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:oklch(0.90 0.004 250);margin-bottom:8px"><span>Relative Humidity</span><span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.78 0.13 200)">{{ simHum }}%</span></div>
+      <input type="range" min="0" max="100" value="{{ simHum }}" onChange="{{ setSimHum }}" style="width:100%" />
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:oklch(0.90 0.004 250);margin-bottom:8px"><span>Last Hour's Ozone</span><span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.78 0.13 200)">{{ simLagDisplay }} ppm</span></div>
+      <input type="range" min="0" max="0.12" step="0.001" value="{{ simLag }}" onChange="{{ setSimLag }}" style="width:100%" />
+    </div>
+    <button onClick="{{ runSimulation }}" style="width:100%;padding:14px;border-radius:12px;border:none;background:oklch(0.78 0.13 200);color:oklch(0.12 0.02 250);font-weight:700;font-size:14px;cursor:pointer">Run Predictive Test</button>
+  </div>
+
+  <sc-if value="{{ simRunning }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;color:oklch(0.72 0.01 250);font-size:13px">
+      <div style="width:16px;height:16px;border-radius:50%;border:2px solid oklch(0.32 0.02 250);border-top-color:oklch(0.78 0.13 200);animation:nemsSpin 0.7s linear infinite"></div>
+      Running model inference…
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ simHasResult }}" hint-placeholder-val="{{ false }}">
+    <div style="background:oklch(0.20 0.02 250);border:1.5px solid {{ simStatusColor }};border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:12px;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em">Predicted Ozone Level</div>
+        <div style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:{{ simStatusColor }};color:oklch(0.12 0.02 250)">{{ simStatusLabel }}</div>
+      </div>
+      <div style="font-size:32px;font-weight:800;color:oklch(0.96 0.004 250);font-family:'IBM Plex Mono',monospace">{{ simResultValue }} <span style="font-size:15px;color:oklch(0.52 0.01 250)">ppm</span></div>
+      <div style="font-size:13px;color:oklch(0.85 0.005 250);line-height:1.5">{{ simAssessment }}</div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- FORENSIC -->
+<sc-if value="{{ isForensic }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:20px">
+  <div>
+    <div style="font-size:24px;font-weight:800;color:oklch(0.96 0.004 250)">Forensic Analysis</div>
+    <div style="font-size:13px;color:oklch(0.72 0.01 250);margin-top:4px">Sr/Cs stable isotope surrogate ratios identify whether pollutants originate on-site or externally.</div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px">
+    <div style="font-size:13px;font-weight:600;color:oklch(0.90 0.004 250);margin-bottom:10px">Cesium vs Strontium Forensic Clusters</div>
+    <svg width="100%" height="180" viewBox="0 0 320 180">
+      <line x1="20" y1="10" x2="20" y2="160" stroke="oklch(0.32 0.02 250)" stroke-width="1"/>
+      <line x1="20" y1="160" x2="310" y2="160" stroke="oklch(0.32 0.02 250)" stroke-width="1"/>
+      <sc-for list="{{ forensicPoints }}" as="p" hint-placeholder-count="30">
+        <circle cx="{{ p.cx }}" cy="{{ p.cy }}" r="3.5" fill="{{ p.color }}" opacity="0.85"></circle>
+      </sc-for>
+      <text x="165" y="176" fill="oklch(0.52 0.01 250)" font-size="9" text-anchor="middle" font-family="IBM Plex Mono, monospace">Cesium PM2.5 LC</text>
+      <text x="10" y="90" fill="oklch(0.52 0.01 250)" font-size="9" text-anchor="middle" font-family="IBM Plex Mono, monospace" transform="rotate(-90,10,90)">Strontium PM2.5 LC</text>
+    </svg>
+    <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:oklch(0.72 0.01 250)"><div style="width:8px;height:8px;border-radius:50%;background:oklch(0.78 0.13 200)"></div>Low ratio (background)</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:oklch(0.72 0.01 250)"><div style="width:8px;height:8px;border-radius:50%;background:oklch(0.78 0.14 80)"></div>Elevated ratio</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:oklch(0.72 0.01 250)"><div style="width:8px;height:8px;border-radius:50%;background:oklch(0.63 0.19 25)"></div>Anomalous ratio</div>
+    </div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px">
+    <div style="font-size:13px;font-weight:600;color:oklch(0.90 0.004 250);margin-bottom:6px">Interpretation</div>
+    <div style="font-size:13px;color:oklch(0.72 0.01 250);line-height:1.6">Clusters with a high Sr/Cs ratio (red) diverge from the site's natural background band, suggesting a fission-product source term rather than ambient dust. Cross-reference with the Early Warning System for correlated multivariate flags.</div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ALERTS -->
+<sc-if value="{{ isAlerts }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:24px;font-weight:800;color:oklch(0.96 0.004 250)">Early Warning</div>
+      <div style="font-size:13px;color:oklch(0.72 0.01 250);margin-top:4px">Isolation Forest multivariate anomaly detections</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <div style="flex:1;background:oklch(0.20 0.02 250);border-radius:12px;padding:12px;border:1px solid oklch(0.32 0.02 250 / 50%)">
+      <div style="font-size:20px;font-weight:800;color:oklch(0.63 0.19 25);font-family:'IBM Plex Mono',monospace">{{ activeAlertsCount }}</div>
+      <div style="font-size:11px;color:oklch(0.52 0.01 250);text-transform:uppercase">Active</div>
+    </div>
+    <div style="flex:1;background:oklch(0.20 0.02 250);border-radius:12px;padding:12px;border:1px solid oklch(0.32 0.02 250 / 50%)">
+      <div style="font-size:20px;font-weight:800;color:oklch(0.96 0.004 250);font-family:'IBM Plex Mono',monospace">{{ totalAlertsCount }}</div>
+      <div style="font-size:11px;color:oklch(0.52 0.01 250);text-transform:uppercase">Total (7d)</div>
+    </div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+    <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="6">
+      <div onClick="{{ a.onOpen }}" style="padding:14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;gap:12px;align-items:flex-start;cursor:pointer">
+        <div style="width:8px;height:8px;border-radius:50%;background:{{ a.color }};margin-top:6px;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;gap:8px">
+            <div style="font-size:13.5px;font-weight:600;color:oklch(0.96 0.004 250)">{{ a.metric }}</div>
+            <div style="font-size:10px;font-weight:700;color:{{ a.color }};white-space:nowrap">{{ a.resolvedLabel }}</div>
+          </div>
+          <div style="font-size:12px;color:oklch(0.72 0.01 250);margin-top:3px">{{ a.stationName }}</div>
+          <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:2px;font-family:'IBM Plex Mono',monospace">{{ a.date }} · {{ a.time }}</div>
+        </div>
+        <svg width="7" height="12" viewBox="0 0 7 12" style="flex-shrink:0;margin-top:6px"><path d="M1 1l5 5-5 5" stroke="oklch(0.52 0.01 250)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- MORE -->
+<sc-if value="{{ isMore }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:20px">
+  <div>
+    <div style="font-size:24px;font-weight:800;color:oklch(0.96 0.004 250)">More</div>
+    <div style="font-size:13px;color:oklch(0.72 0.01 250);margin-top:4px">Additional tools & account</div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+    <sc-for list="{{ moreItems }}" as="m" hint-placeholder-count="7">
+      <div onClick="{{ m.onClick }}" style="padding:14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;align-items:center;gap:12px;cursor:pointer">
+        <div style="width:32px;height:32px;border-radius:9px;background:oklch(0.24 0.015 250);display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ m.icon }}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;color:oklch(0.96 0.004 250);font-weight:500">{{ m.label }}</div>
+        </div>
+        <sc-if value="{{ m.badge }}" hint-placeholder-val="{{ false }}"><div style="background:oklch(0.63 0.19 25);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;margin-right:6px">{{ m.badge }}</div></sc-if>
+        <svg width="7" height="12" viewBox="0 0 7 12"><path d="M1 1l5 5-5 5" stroke="oklch(0.52 0.01 250)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </sc-for>
+  </div>
+  <button onClick="{{ signOut }}" style="width:100%;padding:14px;border-radius:12px;border:1px solid oklch(0.63 0.19 25 / 50%);background:transparent;color:oklch(0.63 0.19 25);font-weight:600;font-size:14px;cursor:pointer">Sign Out</button>
+</div>
+</sc-if>
+
+<!-- ALERT DETAIL -->
+<sc-if value="{{ isAlertDetail }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:{{ currentAlert.color }};color:oklch(0.12 0.02 250)">{{ currentAlert.severityLabel }}</div>
+      <div style="font-size:11px;color:oklch(0.52 0.01 250);font-family:'IBM Plex Mono',monospace">{{ currentAlert.date }} · {{ currentAlert.time }}</div>
+    </div>
+    <div style="font-size:18px;font-weight:700;color:oklch(0.96 0.004 250)">{{ currentAlert.metric }}</div>
+    <div style="font-size:13px;color:oklch(0.72 0.01 250)">{{ currentAlert.stationName }}</div>
+    <div style="font-size:13px;color:oklch(0.85 0.005 250);line-height:1.6;margin-top:4px">{{ currentAlert.desc }}</div>
+  </div>
+  <div>
+    <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Recommended Actions</div>
+    <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+      <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+        <div onClick="{{ c.onToggle }}" style="padding:13px 14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;gap:12px;align-items:flex-start;cursor:pointer">
+          <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid {{ c.boxColor }};background:{{ c.boxBg }};flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px">
+            <sc-if value="{{ c.checked }}" hint-placeholder-val="{{ false }}"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3.5 3.5L11 1" stroke="oklch(0.12 0.02 250)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if>
+          </div>
+          <div style="font-size:13.5px;color:{{ c.textColor }};line-height:1.4">{{ c.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <button onClick="{{ toggleCurrentResolved }}" style="width:100%;padding:14px;border-radius:12px;border:none;background:{{ resolveButtonColor }};color:oklch(0.12 0.02 250);font-weight:700;font-size:14px;cursor:pointer">{{ resolveButtonLabel }}</button>
+</div>
+</sc-if>
+
+<!-- TRENDS -->
+<sc-if value="{{ isTrends }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;gap:8px">
+    <div onClick="{{ setTrendsOzone }}" style="flex:1;text-align:center;padding:9px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{ trendsOzoneBg }};color:{{ trendsOzoneFg }}">Ozone</div>
+    <div onClick="{{ setTrendsCo }}" style="flex:1;text-align:center;padding:9px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{ trendsCoBg }};color:{{ trendsCoFg }}">CO</div>
+    <div onClick="{{ setTrendsNo2 }}" style="flex:1;text-align:center;padding:9px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{ trendsNo2Bg }};color:{{ trendsNo2Fg }}">NO2</div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+      <div style="font-size:13px;color:oklch(0.72 0.01 250)">{{ currentStation.name }}</div>
+      <div style="font-size:22px;font-weight:800;color:oklch(0.96 0.004 250);font-family:'IBM Plex Mono',monospace">{{ trendsLatest }} <span style="font-size:12px;color:oklch(0.52 0.01 250)">{{ trendsUnit }}</span></div>
+    </div>
+    <svg width="100%" height="140" viewBox="0 0 300 140">
+      <path d="{{ trendsPath }}" fill="none" stroke="oklch(0.78 0.13 200)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path>
+    </svg>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <div onClick="{{ setTrends24h }}" style="flex:1;text-align:center;padding:7px;border-radius:8px;font-size:11.5px;cursor:pointer;background:{{ range24hBg }};color:{{ range24hFg }}">24H</div>
+      <div onClick="{{ setTrends7d }}" style="flex:1;text-align:center;padding:7px;border-radius:8px;font-size:11.5px;cursor:pointer;background:{{ range7dBg }};color:{{ range7dFg }}">7D</div>
+      <div onClick="{{ setTrends30d }}" style="flex:1;text-align:center;padding:7px;border-radius:8px;font-size:11.5px;cursor:pointer;background:{{ range30dBg }};color:{{ range30dFg }}">30D</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- MAP -->
+<sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:16px">
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:18px;position:relative;height:150px;overflow:hidden">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(oklch(0.32 0.02 250 / 25%) 1px, transparent 1px), linear-gradient(90deg, oklch(0.32 0.02 250 / 25%) 1px, transparent 1px);background-size:24px 24px"></div>
+    <sc-for list="{{ mapPins }}" as="p" hint-placeholder-count="6">
+      <div style="position:absolute;left:{{ p.left }}%;top:{{ p.top }}%;width:12px;height:12px;border-radius:50%;background:{{ p.color }};border:2px solid oklch(0.13 0.015 250);box-shadow:0 0 0 4px {{ p.color }}33"></div>
+    </sc-for>
+    <div style="position:absolute;bottom:8px;right:10px;font-size:10px;color:oklch(0.52 0.01 250);font-family:'IBM Plex Mono',monospace">Facility perimeter · schematic view</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div onClick="{{ setMapAll }}" style="padding:7px 12px;border-radius:9px;font-size:12px;cursor:pointer;background:{{ mapAllBg }};color:{{ mapAllFg }}">All</div>
+    <div onClick="{{ setMapNominal }}" style="padding:7px 12px;border-radius:9px;font-size:12px;cursor:pointer;background:{{ mapNominalBg }};color:{{ mapNominalFg }}">Nominal</div>
+    <div onClick="{{ setMapWarning }}" style="padding:7px 12px;border-radius:9px;font-size:12px;cursor:pointer;background:{{ mapWarningBg }};color:{{ mapWarningFg }}">Warning</div>
+    <div onClick="{{ setMapCritical }}" style="padding:7px 12px;border-radius:9px;font-size:12px;cursor:pointer;background:{{ mapCriticalBg }};color:{{ mapCriticalFg }}">Critical</div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+    <sc-for list="{{ filteredStations }}" as="s" hint-placeholder-count="6">
+      <div onClick="{{ s.onSelect }}" style="padding:13px 14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;align-items:center;gap:12px;cursor:pointer;background:{{ s.rowBg }}">
+        <div style="width:9px;height:9px;border-radius:50%;background:{{ s.statusColor }};flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:600;color:oklch(0.96 0.004 250)">{{ s.name }}</div>
+          <div style="font-size:11px;color:oklch(0.52 0.01 250);font-family:'IBM Plex Mono',monospace">{{ s.code }} · O3 {{ s.ozoneDisplay }} ppm</div>
+        </div>
+        <sc-if value="{{ s.selected }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px;font-weight:700;color:oklch(0.78 0.13 200)">ACTIVE</div></sc-if>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- NOTIFICATIONS -->
+<sc-if value="{{ isNotifications }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;justify-content:flex-end">
+    <div onClick="{{ markAllRead }}" style="font-size:12.5px;color:oklch(0.78 0.13 200);cursor:pointer">Mark all read</div>
+  </div>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+    <sc-for list="{{ notifications }}" as="n" hint-placeholder-count="6">
+      <div onClick="{{ n.onOpen }}" style="padding:14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:{{ n.rowBg }}">
+        <div style="width:8px;height:8px;border-radius:50%;background:{{ n.color }};margin-top:6px;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:{{ n.weight }};color:oklch(0.96 0.004 250)">{{ n.title }}</div>
+          <div style="font-size:12px;color:oklch(0.72 0.01 250);margin-top:3px;line-height:1.4">{{ n.body }}</div>
+          <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:4px;font-family:'IBM Plex Mono',monospace">{{ n.time }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- HANDOFF -->
+<sc-if value="{{ isHandoff }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:16px">
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="font-size:13px;font-weight:600;color:oklch(0.90 0.004 250)">New Handoff Entry</div>
+    <textarea placeholder="Describe station conditions, actions taken, and anything the next shift should watch…" value="{{ handoffDraft }}" onChange="{{ setHandoffDraft }}" style="width:100%;box-sizing:border-box;min-height:80px;background:oklch(0.24 0.015 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:10px;padding:10px;color:oklch(0.96 0.004 250);font-size:13px;font-family:Inter,sans-serif;resize:vertical"></textarea>
+    <select value="{{ handoffSeverity }}" onChange="{{ setHandoffSeverity }}" style="background:oklch(0.24 0.015 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:10px;padding:10px;color:oklch(0.96 0.004 250);font-size:13px">
+      <option value="normal">Normal</option>
+      <option value="warning">Warning</option>
+      <option value="critical">Critical</option>
+    </select>
+    <button onClick="{{ submitHandoff }}" style="width:100%;padding:12px;border-radius:10px;border:none;background:oklch(0.78 0.13 200);color:oklch(0.12 0.02 250);font-weight:700;font-size:13.5px;cursor:pointer">Submit Entry</button>
+  </div>
+  <div>
+    <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Shift Log</div>
+    <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+      <sc-for list="{{ handoffEntries }}" as="h" hint-placeholder-count="4">
+        <div style="padding:13px 14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:12.5px;font-weight:600;color:oklch(0.96 0.004 250)">{{ h.shift }}</div>
+            <div style="width:7px;height:7px;border-radius:50%;background:{{ h.color }}"></div>
+          </div>
+          <div style="font-size:12.5px;color:oklch(0.85 0.005 250);line-height:1.5;margin-top:5px">{{ h.note }}</div>
+          <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:5px;font-family:'IBM Plex Mono',monospace">{{ h.tech }} · {{ h.time }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- SETTINGS -->
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:20px">
+  <div>
+    <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Safety Thresholds</div>
+    <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:18px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:oklch(0.90 0.004 250);margin-bottom:8px"><span>Warning threshold</span><span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.78 0.14 80)">{{ thresholdWarningDisplay }} ppm</span></div>
+        <input type="range" min="0.02" max="0.09" step="0.001" value="{{ thresholdWarning }}" onChange="{{ setThresholdWarning }}" style="width:100%" />
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:oklch(0.90 0.004 250);margin-bottom:8px"><span>Critical threshold</span><span style="font-family:'IBM Plex Mono',monospace;color:oklch(0.63 0.19 25)">{{ thresholdCriticalDisplay }} ppm</span></div>
+        <input type="range" min="0.03" max="0.12" step="0.001" value="{{ thresholdCritical }}" onChange="{{ setThresholdCritical }}" style="width:100%" />
+      </div>
+      <div style="font-size:11.5px;color:oklch(0.52 0.01 250);line-height:1.5">Changes apply immediately to the Live Simulation assessment.</div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Sensor Network</div>
+    <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+      <sc-for list="{{ sensors }}" as="se" hint-placeholder-count="5">
+        <div style="padding:13px 14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;align-items:center;gap:12px">
+          <div style="flex:1">
+            <div style="font-size:13.5px;font-weight:500;color:oklch(0.96 0.004 250)">{{ se.name }}</div>
+            <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:2px">{{ se.coverage }} · <span style="color:{{ se.statusColor }}">{{ se.statusText }}</span></div>
+          </div>
+          <div onClick="{{ se.onToggle }}" style="width:44px;height:26px;border-radius:13px;background:{{ se.switchBg }};position:relative;cursor:pointer;flex-shrink:0">
+            <div style="position:absolute;top:2px;left:{{ se.knobLeft }}px;width:22px;height:22px;border-radius:50%;background:white;transition:left 0.15s"></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- REPORTS -->
+<sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <button onClick="{{ generateReport }}" style="width:100%;padding:14px;border-radius:12px;border:none;background:oklch(0.78 0.13 200);color:oklch(0.12 0.02 250);font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+    <sc-if value="{{ generatingReport }}" hint-placeholder-val="{{ false }}"><div style="width:14px;height:14px;border-radius:50%;border:2px solid oklch(0.12 0.02 250 / 30%);border-top-color:oklch(0.12 0.02 250);animation:nemsSpin 0.7s linear infinite"></div></sc-if>
+    {{ generateButtonLabel }}
+  </button>
+  <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+    <sc-for list="{{ reports }}" as="r" hint-placeholder-count="3">
+      <div style="padding:14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;gap:12px;align-items:center">
+        <div style="width:34px;height:34px;border-radius:9px;background:oklch(0.24 0.015 250);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l3 3v13H5V2z" stroke="oklch(0.78 0.13 200)" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13.5px;font-weight:600;color:oklch(0.96 0.004 250)">{{ r.name }}</div>
+          <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:2px;font-family:'IBM Plex Mono',monospace">{{ r.station }} · {{ r.date }} · {{ r.size }}</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" style="flex-shrink:0"><path d="M10 3v10m0 0l-4-4m4 4l4-4M4 17h12" stroke="oklch(0.52 0.01 250)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- PROFILE -->
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0">
+    <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.24 0.015 250);border:2px solid oklch(0.78 0.13 200 / 50%);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:oklch(0.78 0.13 200)">AR</div>
+    <div style="text-align:center">
+      <div style="font-size:17px;font-weight:700;color:oklch(0.96 0.004 250)">Alex Rivera</div>
+      <div style="font-size:12.5px;color:oklch(0.72 0.01 250);margin-top:2px">Senior Environmental Safety Technician</div>
+      <div style="font-size:11px;color:oklch(0.52 0.01 250);margin-top:4px;font-family:'IBM Plex Mono',monospace">NEMS-TECH-0417 · RSL-II Certified</div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:13px;font-weight:600;color:oklch(0.72 0.01 250);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Permissions</div>
+    <div style="background:oklch(0.20 0.02 250);border:1px solid oklch(0.32 0.02 250 / 50%);border-radius:14px;overflow:hidden">
+      <sc-for list="{{ permissions }}" as="p" hint-placeholder-count="4">
+        <div style="padding:12px 14px;border-bottom:1px solid oklch(0.32 0.02 250 / 30%);display:flex;align-items:center;gap:10px">
+          <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 7l4 4 8-8" stroke="oklch(0.75 0.14 150)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:13px;color:oklch(0.90 0.004 250)">{{ p.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <button onClick="{{ signOut }}" style="width:100%;padding:14px;border-radius:12px;border:1px solid oklch(0.63 0.19 25 / 50%);background:transparent;color:oklch(0.63 0.19 25);font-weight:600;font-size:14px;cursor:pointer">Sign Out</button>
+</div>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ showTabBar }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;bottom:0;left:0;right:0;display:flex;padding:8px 6px 22px;background:oklch(0.16 0.015 250 / 92%);backdrop-filter:blur(14px);border-top:1px solid oklch(0.32 0.02 250 / 40%)">
+  <div onClick="{{ goHome }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer">
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><path d="M3 10.5L10.5 4l7.5 6.5V19H13v-6H8v6H3v-8.5z" stroke="{{ tabHomeColor }}" stroke-width="1.7" stroke-linejoin="round"/></svg>
+    <div style="font-size:10px;color:{{ tabHomeColor }}">Home</div>
+  </div>
+  <div onClick="{{ goSimulate }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer">
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><path d="M2 15l4-8 3 5 3-9 3 8 4-4" stroke="{{ tabSimulateColor }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div style="font-size:10px;color:{{ tabSimulateColor }}">Simulate</div>
+  </div>
+  <div onClick="{{ goForensic }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer">
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><circle cx="10.5" cy="10.5" r="7" stroke="{{ tabForensicColor }}" stroke-width="1.7"/><circle cx="10.5" cy="10.5" r="3" stroke="{{ tabForensicColor }}" stroke-width="1.7"/></svg>
+    <div style="font-size:10px;color:{{ tabForensicColor }}">Forensic</div>
+  </div>
+  <div onClick="{{ goAlerts }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative">
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><path d="M10.5 2a6 6 0 016 6v3.5L18 15H3l1.5-3.5V8a6 6 0 016-6z" stroke="{{ tabAlertsColor }}" stroke-width="1.7" stroke-linejoin="round"/></svg>
+    <div style="font-size:10px;color:{{ tabAlertsColor }}">Alerts</div>
+    <sc-if value="{{ hasActiveAlerts }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:-2px;right:22px;width:7px;height:7px;border-radius:50%;background:oklch(0.63 0.19 25)"></div></sc-if>
+  </div>
+  <div onClick="{{ goMore }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer">
+    <svg width="21" height="21" viewBox="0 0 21 21" fill="none"><circle cx="5" cy="5" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="10.5" cy="5" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="16" cy="5" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="5" cy="10.5" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="10.5" cy="10.5" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="16" cy="10.5" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="5" cy="16" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="10.5" cy="16" r="1.8" fill="{{ tabMoreColor }}"/><circle cx="16" cy="16" r="1.8" fill="{{ tabMoreColor }}"/></svg>
+    <div style="font-size:10px;color:{{ tabMoreColor }}">More</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showBackHeader }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:0;left:0;right:0;padding-top:54px;padding-bottom:10px;background:oklch(0.13 0.015 250 / 96%);backdrop-filter:blur(10px);display:flex;align-items:center;gap:10px;padding-left:14px;padding-right:14px;z-index:5">
+  <div onClick="{{ goBack }}" style="width:34px;height:34px;border-radius:10px;background:oklch(0.20 0.02 250);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+    <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1L1 7.5l6.5 6.5" stroke="oklch(0.90 0.004 250)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="font-size:17px;font-weight:700;color:oklch(0.96 0.004 250)">{{ backHeaderTitle }}</div>
+</div>
+</sc-if>
+
+</sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:940},&quot;startAuthenticated&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;thresholdWarning&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.055,&quot;min&quot;:0.02,&quot;max&quot;:0.09,&quot;step&quot;:0.001,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Safety Thresholds&quot;},&quot;thresholdCritical&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.07,&quot;min&quot;:0.03,&quot;max&quot;:0.12,&quot;step&quot;:0.001,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Safety Thresholds&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'login', prevScreen: 'home',
+    loginEmail: '', loginPassword: '',
+    selectedStationId: 's1',
+    simTemp: 72, simNo2: 15, simHum: 45, simLag: 0.03, simResult: null, simRunning: false,
+    selectedAlertId: null,
+    resolvedMap: {},
+    checklistMap: {},
+    notifications: [
+      { id: 'n1', title: 'Critical Alert — Cooling Tower Array', body: 'Ozone + CO multivariate anomaly detected by Isolation Forest.', time: '07:42', read: false, kind: 'critical' },
+      { id: 'n2', title: 'Threshold Updated', body: 'Warning threshold changed to 0.055 ppm by J. Alvarez.', time: 'Yesterday', read: false, kind: 'info' },
+      { id: 'n3', title: 'Shift Handoff Submitted', body: 'Night shift log submitted by T. Nguyen.', time: 'Yesterday', read: true, kind: 'info' },
+      { id: 'n4', title: 'Report Generated', body: 'Weekly Forensic Summary ready for download.', time: '2 days ago', read: true, kind: 'info' },
+      { id: 'n5', title: 'Sensor Calibration Due', body: 'NO2 sensor at North Gate due for calibration.', time: '3 days ago', read: true, kind: 'warning' },
+      { id: 'n6', title: 'Model Retrained', body: 'Ozone predictor retrained, R\u00B2 0.7162.', time: '5 days ago', read: true, kind: 'info' },
+    ],
+    handoffEntries: [
+      { id: 'h1', shift: 'Night \u2192 Day', tech: 'T. Nguyen', time: '06:00 \u00B7 Jul 27', severity: 'warning', note: 'North Gate showing elevated NO2 trend overnight; recommend increased sampling.' },
+      { id: 'h2', shift: 'Day \u2192 Night', tech: 'J. Alvarez', time: '18:00 \u00B7 Jul 26', severity: 'normal', note: 'All stations nominal. Routine calibration completed on CTA-03 CO sensor.' },
+      { id: 'h3', shift: 'Night \u2192 Day', tech: 'T. Nguyen', time: '06:00 \u00B7 Jul 26', severity: 'critical', note: 'Cooling Tower Array flagged by Isolation Forest twice overnight; escalated to RSO.' },
+      { id: 'h4', shift: 'Day \u2192 Night', tech: 'M. Okafor', time: '18:00 \u00B7 Jul 25', severity: 'normal', note: 'No anomalies. Isotope baseline recalibrated for Q3.' },
+    ],
+    handoffDraft: '', handoffSeverity: 'normal',
+    reports: [
+      { id: 'r1', name: 'Weekly Forensic Summary', station: 'All Stations', date: 'Jul 21\u201327', size: '2.4 MB' },
+      { id: 'r2', name: 'Monthly Safety Compliance', station: 'All Stations', date: 'June 2026', size: '5.1 MB' },
+      { id: 'r3', name: 'Cooling Tower Incident Report', station: 'Cooling Tower Array', date: 'Jul 20', size: '1.1 MB' },
+    ],
+    generatingReport: false,
+    thresholdWarning: 0.055, thresholdCritical: 0.070,
+    sensors: [
+      { id: 'se1', name: 'NO2 Analyzer', coverage: 'All 6 stations', enabled: true },
+      { id: 'se2', name: 'Ozone Analyzer', coverage: 'All 6 stations', enabled: true },
+      { id: 'se3', name: 'CO Analyzer', coverage: 'All 6 stations', enabled: true },
+      { id: 'se4', name: 'Sr/Cs Isotope Detector', coverage: 'CTA-03, NGT-02', enabled: true },
+      { id: 'se5', name: 'Temperature/Humidity Probe', coverage: 'All 6 stations', enabled: false },
+    ],
+    trendsMetric: 'ozone', trendsRange: '24h',
+    mapFilter: 'all',
+  };
+
+  STATIONS = [
+    { id: 's1', name: 'Riverside Perimeter', code: 'RVS-01', ozone: 0.048, co: 0.6, status: 'nominal' },
+    { id: 's2', name: 'North Gate Monitoring Post', code: 'NGT-02', ozone: 0.061, co: 0.9, status: 'warning' },
+    { id: 's3', name: 'Cooling Tower Array', code: 'CTA-03', ozone: 0.081, co: 1.4, status: 'critical' },
+    { id: 's4', name: 'Effluent Discharge Point', code: 'EDP-04', ozone: 0.039, co: 0.5, status: 'nominal' },
+    { id: 's5', name: 'Perimeter Fence East', code: 'PFE-05', ozone: 0.052, co: 0.7, status: 'nominal' },
+    { id: 's6', name: 'Administrative Campus', code: 'ADM-06', ozone: 0.041, co: 0.4, status: 'nominal' },
+  ];
+
+  ALERTS = [
+    { id: 'a1', stationId: 's3', metric: 'Ozone + CO Multivariate Deviation', time: '07:42', date: 'Jul 27', severity: 'critical', initiallyResolved: false, desc: 'Isolation Forest flagged simultaneous Ozone and CO deviation exceeding 3\u03C3 from rolling baseline at Cooling Tower Array.' },
+    { id: 'a2', stationId: 's2', metric: 'Sr/Cs Forensic Ratio Drift', time: '03:15', date: 'Jul 27', severity: 'warning', initiallyResolved: false, desc: 'Strontium/Cesium surrogate ratio drifted outside the forensic baseline band, suggesting a possible external source term.' },
+    { id: 'a3', stationId: 's5', metric: 'NO2 Concentration Spike', time: '22:58', date: 'Jul 26', severity: 'warning', initiallyResolved: false, desc: 'NO2 concentration spiked 2.4x above hourly average at Perimeter Fence East.' },
+    { id: 'a4', stationId: 's1', metric: 'Humidity/Ozone Correlation Anomaly', time: '18:04', date: 'Jul 26', severity: 'warning', initiallyResolved: true, desc: 'Ozone did not track expected humidity-driven decline; resolved after sensor recalibration.' },
+    { id: 'a5', stationId: 's6', metric: 'Temporal Lag Deviation', time: '11:29', date: 'Jul 25', severity: 'warning', initiallyResolved: true, desc: 'Lag-1 Ozone feature deviated from model expectation; traced to a data ingestion delay.' },
+    { id: 'a6', stationId: 's4', metric: 'Isotope Baseline Drift', time: '06:52', date: 'Jul 25', severity: 'critical', initiallyResolved: true, desc: 'Isotope baseline drift traced to a scheduled detector calibration, confirmed benign.' },
+  ];
+
+  ACTIONS = [
+    'Dispatch technician to station for manual sensor verification',
+    'Cross-check HVAC / ventilation scrubber status',
+    'Compare readings against adjacent stations for plume confirmation',
+    'Log incident in shift handoff report',
+    'Escalate to Radiological Safety Officer if criteria persist beyond 30 minutes',
+  ];
+
+  PERMISSIONS = [
+    'Run predictive simulations',
+    'Acknowledge & resolve alerts',
+    'Edit safety thresholds',
+    'Generate compliance reports',
+  ];
+
+  componentDidMount() {
+    const p = this.props || {};
+    const patch = {};
+    if (p.startAuthenticated) patch.screen = 'home';
+    if (typeof p.thresholdWarning === 'number') patch.thresholdWarning = p.thresholdWarning;
+    if (typeof p.thresholdCritical === 'number') patch.thresholdCritical = p.thresholdCritical;
+    if (Object.keys(patch).length) this.setState(patch);
+  }
+
+  seedRandom(seed) {
+    let h = 1779033703 ^ seed.length;
+    for (let i = 0; i < seed.length; i++) { h = Math.imul(h ^ seed.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    return function () {
+      h = Math.imul(h ^ (h >>> 16), 2246822507);
+      h = Math.imul(h ^ (h >>> 13), 3266489909);
+      h ^= h >>> 16;
+      return (h >>> 0) / 4294967296;
+    };
+  }
+
+  colorForSeverity(sev) {
+    if (sev === 'critical') return 'oklch(0.63 0.19 25)';
+    if (sev === 'warning') return 'oklch(0.78 0.14 80)';
+    if (sev === 'normal' || sev === 'nominal') return 'oklch(0.75 0.14 150)';
+    return 'oklch(0.78 0.13 200)';
+  }
+  labelForSeverity(sev) {
+    if (sev === 'critical') return 'CRITICAL';
+    if (sev === 'warning') return 'WARNING';
+    if (sev === 'normal' || sev === 'nominal') return 'NOMINAL';
+    return 'INFO';
+  }
+
+  go = (screen) => this.setState((s) => ({ screen, prevScreen: s.screen }));
+  goBack = () => this.setState((s) => ({ screen: s.prevScreen || 'home' }));
+  openAlert = (id) => this.setState((s) => ({ screen: 'alertDetail', prevScreen: s.screen, selectedAlertId: id }));
+  login = () => { if (this.state.loginEmail && this.state.loginPassword) this.setState({ screen: 'home' }); };
+  signOut = () => this.setState({ screen: 'login', loginEmail: '', loginPassword: '' });
+
+  runSimulation = () => {
+    this.setState({ simRunning: true });
+    setTimeout(() => {
+      const { simTemp, simNo2, simHum, simLag } = this.state;
+      const value = Math.max(0.002, 0.012 + simLag * 0.55 + simNo2 * 0.0016 + Math.max(0, simTemp - 70) * 0.00035 + Math.max(0, simHum - 50) * 0.00012 - Math.max(0, 50 - simHum) * 0.00005);
+      this.setState({ simResult: value, simRunning: false });
+    }, 600);
+  };
+
+  isResolved(id, s) {
+    const st = s || this.state;
+    if (id in st.resolvedMap) return st.resolvedMap[id];
+    const a = this.ALERTS.find((x) => x.id === id);
+    return a ? a.initiallyResolved : false;
+  }
+  toggleResolved = (id) => this.setState((s) => ({ resolvedMap: { ...s.resolvedMap, [id]: !this.isResolved(id, s) } }));
+  toggleChecklist = (key) => this.setState((s) => ({ checklistMap: { ...s.checklistMap, [key]: !s.checklistMap[key] } }));
+  toggleNotifRead = (id) => this.setState((s) => ({ notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)) }));
+  markAllRead = () => this.setState((s) => ({ notifications: s.notifications.map((n) => ({ ...n, read: true })) }));
+
+  submitHandoff = () => {
+    if (!this.state.handoffDraft.trim()) return;
+    const entry = { id: 'h' + Date.now(), shift: 'Day \u2192 Night', tech: 'Alex Rivera (you)', time: 'Just now', severity: this.state.handoffSeverity, note: this.state.handoffDraft.trim() };
+    this.setState((s) => ({ handoffEntries: [entry, ...s.handoffEntries], handoffDraft: '' }));
+  };
+
+  toggleSensor = (id) => this.setState((s) => ({ sensors: s.sensors.map((x) => (x.id === id ? { ...x, enabled: !x.enabled } : x)) }));
+
+  generateReport = () => {
+    this.setState({ generatingReport: true });
+    setTimeout(() => {
+      const st = this.STATIONS.find((x) => x.id === this.state.selectedStationId);
+      const entry = { id: 'r' + Date.now(), name: 'Ad-hoc Station Report', station: st ? st.name : 'All Stations', date: 'Jul 27', size: '0.8 MB' };
+      this.setState((s) => ({ reports: [entry, ...s.reports], generatingReport: false }));
+    }, 900);
+  };
+
+  renderVals() {
+    const s = this.state;
+    const cyan = 'oklch(0.78 0.13 200)', dim = 'oklch(0.52 0.01 250)';
+
+    const stations = this.STATIONS.map((st) => ({
+      ...st,
+      statusColor: this.colorForSeverity(st.status),
+      statusLabel: this.labelForSeverity(st.status),
+      ozoneDisplay: st.ozone.toFixed(3),
+      selected: st.id === s.selectedStationId,
+      onSelect: () => this.setState({ selectedStationId: st.id }),
+    }));
+    const currentStation = stations.find((x) => x.id === s.selectedStationId) || stations[0];
+
+    const filterMatch = (st) => s.mapFilter === 'all' || st.status === s.mapFilter;
+    const filteredStations = stations.filter(filterMatch).map((st) => ({ ...st, rowBg: st.selected ? 'oklch(0.24 0.015 250)' : 'transparent' }));
+
+    const alerts = this.ALERTS.map((a) => {
+      const resolved = this.isResolved(a.id, s);
+      const st = this.STATIONS.find((x) => x.id === a.stationId);
+      return { ...a, resolved, resolvedLabel: resolved ? 'RESOLVED' : 'ACTIVE', color: this.colorForSeverity(a.severity), severityLabel: this.labelForSeverity(a.severity), stationName: st ? st.name : '', onOpen: () => this.openAlert(a.id) };
+    });
+    const activeAlertsCount = alerts.filter((a) => !a.resolved).length;
+    const currentAlert = alerts.find((a) => a.id === s.selectedAlertId) || alerts[0];
+    const checklist = this.ACTIONS.map((label, i) => {
+      const key = (currentAlert ? currentAlert.id : 'x') + '-' + i;
+      const checked = !!s.checklistMap[key];
+      return { key, label, checked, onToggle: () => this.toggleChecklist(key), boxColor: checked ? cyan : 'oklch(0.32 0.02 250)', boxBg: checked ? cyan : 'transparent', textColor: checked ? dim : 'oklch(0.90 0.004 250)' };
+    });
+
+    const unreadCount = s.notifications.filter((n) => !n.read).length;
+    const notifications = s.notifications.map((n) => ({ ...n, color: this.colorForSeverity(n.kind), weight: n.read ? 400 : 700, rowBg: n.read ? 'transparent' : 'oklch(0.78 0.13 200 / 6%)', onOpen: () => this.toggleNotifRead(n.id) }));
+    const handoffEntries = s.handoffEntries.map((h) => ({ ...h, color: this.colorForSeverity(h.severity) }));
+    const sensors = s.sensors.map((se) => ({ ...se, statusText: se.enabled ? 'Online' : 'Disabled', statusColor: se.enabled ? 'oklch(0.75 0.14 150)' : dim, switchBg: se.enabled ? cyan : 'oklch(0.32 0.02 250)', knobLeft: se.enabled ? 20 : 2, onToggle: () => this.toggleSensor(se.id) }));
+
+    let simStatusLabel = '', simStatusColor = 'oklch(0.72 0.01 250)', simAssessment = '';
+    if (s.simResult !== null) {
+      if (s.simResult > s.thresholdCritical) { simStatusLabel = 'CRITICAL'; simStatusColor = this.colorForSeverity('critical'); simAssessment = 'Area is severely affected. Activate ventilation scrubbers.'; }
+      else if (s.simResult > s.thresholdWarning) { simStatusLabel = 'WARNING'; simStatusColor = this.colorForSeverity('warning'); simAssessment = 'Area is moderately affected. Increase sampling frequency.'; }
+      else { simStatusLabel = 'NOMINAL'; simStatusColor = this.colorForSeverity('nominal'); simAssessment = 'No radiological or chemical deviation detected.'; }
+    }
+
+    const rnd = this.seedRandom('forensic-fixed');
+    const forensicPoints = Array.from({ length: 36 }, (_, i) => {
+      const cs = 0.4 + rnd() * 2.6;
+      const sr = 0.3 + cs * 0.55 + (rnd() - 0.5) * 0.9;
+      const ratio = sr / cs;
+      const cx = 20 + (cs / 3.2) * 280;
+      const cy = 160 - (Math.max(0, Math.min(2.4, sr)) / 2.4) * 150;
+      const color = ratio > 0.9 ? 'oklch(0.63 0.19 25)' : ratio > 0.6 ? 'oklch(0.78 0.14 80)' : cyan;
+      return { key: 'fp' + i, cx: cx.toFixed(1), cy: cy.toFixed(1), color };
+    });
+
+    const metricSeed = { ozone: 0.045, co: 0.7, no2: 15 }[s.trendsMetric];
+    const rangeCount = { '24h': 24, '7d': 7, '30d': 30 }[s.trendsRange];
+    const rnd2 = this.seedRandom('trend-' + s.trendsMetric + '-' + s.trendsRange + '-' + s.selectedStationId);
+    const vals = [];
+    let v = metricSeed;
+    for (let i = 0; i < rangeCount; i++) { v = Math.max(metricSeed * 0.4, v + (rnd2() - 0.5) * metricSeed * 0.25); vals.push(v); }
+    const maxV = Math.max(...vals) * 1.15, minV = Math.min(...vals) * 0.85;
+    const chartW = 300, chartH = 140;
+    const trendsPath = vals.map((val, i) => {
+      const x = (i / (rangeCount - 1)) * chartW;
+      const y = chartH - ((val - minV) / (maxV - minV || 1)) * chartH;
+      return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    const trendsUnit = s.trendsMetric === 'no2' ? 'ppb' : 'ppm';
+    const trendsLatest = vals[vals.length - 1].toFixed(3);
+
+    const chipBg = (active) => (active ? cyan : 'oklch(0.20 0.02 250)');
+    const chipFg = (active) => (active ? 'oklch(0.12 0.02 250)' : 'oklch(0.85 0.005 250)');
+
+    const isTabScreen = ['home', 'simulate', 'forensic', 'alerts', 'more'].includes(s.screen);
+    const pushedTitles = { alertDetail: 'Alert Detail', trends: 'Historical Trends', map: 'Station Map', notifications: 'Notifications', handoff: 'Shift Handoff', settings: 'Settings', reports: 'Reports', profile: 'Profile' };
+    const tabColor = (name) => (s.screen === name ? cyan : dim);
+
+    const moreItems = [
+      { key: 'mi1', label: 'Historical Trends', icon: '\u{1F4C8}', badge: 0, onClick: () => this.go('trends') },
+      { key: 'mi2', label: 'Station Map', icon: '\u{1F4CD}', badge: 0, onClick: () => this.go('map') },
+      { key: 'mi3', label: 'Notifications', icon: '\u{1F514}', badge: unreadCount, onClick: () => this.go('notifications') },
+      { key: 'mi4', label: 'Shift Handoff Log', icon: '\u{1F4DD}', badge: 0, onClick: () => this.go('handoff') },
+      { key: 'mi5', label: 'Thresholds & Sensors', icon: '\u2699', badge: 0, onClick: () => this.go('settings') },
+      { key: 'mi6', label: 'Reports & Export', icon: '\u{1F4C4}', badge: 0, onClick: () => this.go('reports') },
+      { key: 'mi7', label: 'Profile & Permissions', icon: '\u{1F464}', badge: 0, onClick: () => this.go('profile') },
+    ];
+
+    const mapPins = filteredStations.map((st, i) => ({ key: 'mp' + i, left: 10 + (i * 15) % 82, top: 15 + ((i * 37) % 70), color: st.statusColor }));
+
+    return {
+      isLogin: s.screen === 'login', isAuthed: s.screen !== 'login',
+      loginEmail: s.loginEmail, loginPassword: s.loginPassword,
+      setLoginEmail: (e) => this.setState({ loginEmail: e.target.value }),
+      setLoginPassword: (e) => this.setState({ loginPassword: e.target.value }),
+      doLogin: this.login,
+      isHome: s.screen === 'home', isSimulate: s.screen === 'simulate', isForensic: s.screen === 'forensic',
+      isAlerts: s.screen === 'alerts', isMore: s.screen === 'more', isAlertDetail: s.screen === 'alertDetail',
+      isTrends: s.screen === 'trends', isMap: s.screen === 'map', isNotifications: s.screen === 'notifications',
+      isHandoff: s.screen === 'handoff', isSettings: s.screen === 'settings', isReports: s.screen === 'reports',
+      isProfile: s.screen === 'profile',
+      showTabBar: isTabScreen,
+      showBackHeader: !isTabScreen && s.screen !== 'login',
+      backHeaderTitle: pushedTitles[s.screen] || '',
+      tabScreenBottomPad: isTabScreen ? 110 : 40,
+      goBack: this.goBack,
+      goHome: () => this.go('home'), goSimulate: () => this.go('simulate'), goForensic: () => this.go('forensic'),
+      goAlerts: () => this.go('alerts'), goMore: () => this.go('more'),
+      goTrends: () => this.go('trends'), goMap: () => this.go('map'), goNotifications: () => this.go('notifications'),
+      goHandoff: () => this.go('handoff'), goSettings: () => this.go('settings'), goReports: () => this.go('reports'),
+      goProfile: () => this.go('profile'),
+      signOut: this.signOut,
+      tabHomeColor: tabColor('home'), tabSimulateColor: tabColor('simulate'), tabForensicColor: tabColor('forensic'),
+      tabAlertsColor: tabColor('alerts'), tabMoreColor: tabColor('more'),
+      hasUnread: unreadCount > 0, hasActiveAlerts: activeAlertsCount > 0,
+      stations, currentStation, filteredStations, mapPins,
+      activeStationName: currentStation.name, activeStationCode: currentStation.code,
+      activeStationOzone: currentStation.ozone.toFixed(3), activeStationCo: currentStation.co.toFixed(2),
+      activeStationStatusLabel: currentStation.statusLabel, activeStationStatusColor: currentStation.statusColor,
+      homeHandoffPreview: handoffEntries.slice(0, 2),
+      alerts, activeAlertsCount, totalAlertsCount: alerts.length, currentAlert, checklist,
+      resolveButtonLabel: currentAlert && currentAlert.resolved ? 'Reopen Alert' : 'Mark as Resolved',
+      resolveButtonColor: currentAlert && currentAlert.resolved ? 'oklch(0.32 0.02 250)' : 'oklch(0.75 0.14 150)',
+      toggleCurrentResolved: () => currentAlert && this.toggleResolved(currentAlert.id),
+      simTemp: s.simTemp, simNo2: s.simNo2, simHum: s.simHum, simLag: s.simLag, simLagDisplay: s.simLag.toFixed(3),
+      setSimTemp: (e) => this.setState({ simTemp: Number(e.target.value) }),
+      setSimNo2: (e) => this.setState({ simNo2: Number(e.target.value) }),
+      setSimHum: (e) => this.setState({ simHum: Number(e.target.value) }),
+      setSimLag: (e) => this.setState({ simLag: Number(e.target.value) }),
+      runSimulation: this.runSimulation, simRunning: s.simRunning, simHasResult: s.simResult !== null,
+      simResultValue: s.simResult !== null ? s.simResult.toFixed(4) : '',
+      simStatusLabel, simStatusColor, simAssessment,
+      forensicPoints,
+      unreadCount, notifications, markAllRead: this.markAllRead,
+      handoffEntries, handoffDraft: s.handoffDraft, handoffSeverity: s.handoffSeverity,
+      setHandoffDraft: (e) => this.setState({ handoffDraft: e.target.value }),
+      setHandoffSeverity: (e) => this.setState({ handoffSeverity: e.target.value }),
+      submitHandoff: this.submitHandoff,
+      sensors,
+      thresholdWarning: s.thresholdWarning, thresholdCritical: s.thresholdCritical,
+      thresholdWarningDisplay: s.thresholdWarning.toFixed(3), thresholdCriticalDisplay: s.thresholdCritical.toFixed(3),
+      setThresholdWarning: (e) => this.setState({ thresholdWarning: Number(e.target.value) }),
+      setThresholdCritical: (e) => this.setState({ thresholdCritical: Number(e.target.value) }),
+      reports: s.reports, generatingReport: s.generatingReport, generateReport: this.generateReport,
+      generateButtonLabel: s.generatingReport ? 'Generating…' : 'Generate New Report',
+      trendsPath, trendsUnit, trendsLatest,
+      setTrendsOzone: () => this.setState({ trendsMetric: 'ozone' }),
+      setTrendsCo: () => this.setState({ trendsMetric: 'co' }),
+      setTrendsNo2: () => this.setState({ trendsMetric: 'no2' }),
+      trendsOzoneBg: chipBg(s.trendsMetric === 'ozone'), trendsOzoneFg: chipFg(s.trendsMetric === 'ozone'),
+      trendsCoBg: chipBg(s.trendsMetric === 'co'), trendsCoFg: chipFg(s.trendsMetric === 'co'),
+      trendsNo2Bg: chipBg(s.trendsMetric === 'no2'), trendsNo2Fg: chipFg(s.trendsMetric === 'no2'),
+      setTrends24h: () => this.setState({ trendsRange: '24h' }),
+      setTrends7d: () => this.setState({ trendsRange: '7d' }),
+      setTrends30d: () => this.setState({ trendsRange: '30d' }),
+      range24hBg: chipBg(s.trendsRange === '24h'), range24hFg: chipFg(s.trendsRange === '24h'),
+      range7dBg: chipBg(s.trendsRange === '7d'), range7dFg: chipFg(s.trendsRange === '7d'),
+      range30dBg: chipBg(s.trendsRange === '30d'), range30dFg: chipFg(s.trendsRange === '30d'),
+      setMapAll: () => this.setState({ mapFilter: 'all' }),
+      setMapNominal: () => this.setState({ mapFilter: 'nominal' }),
+      setMapWarning: () => this.setState({ mapFilter: 'warning' }),
+      setMapCritical: () => this.setState({ mapFilter: 'critical' }),
+      mapAllBg: chipBg(s.mapFilter === 'all'), mapAllFg: chipFg(s.mapFilter === 'all'),
+      mapNominalBg: chipBg(s.mapFilter === 'nominal'), mapNominalFg: chipFg(s.mapFilter === 'nominal'),
+      mapWarningBg: chipBg(s.mapFilter === 'warning'), mapWarningFg: chipFg(s.mapFilter === 'warning'),
+      mapCriticalBg: chipBg(s.mapFilter === 'critical'), mapCriticalFg: chipFg(s.mapFilter === 'critical'),
+      moreItems,
+      permissions: this.PERMISSIONS.map((p, i) => ({ key: 'perm' + i, label: p })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
